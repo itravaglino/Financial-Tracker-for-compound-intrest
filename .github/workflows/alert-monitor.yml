@@ -1,0 +1,20 @@
+name: Alert Monitor
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+jobs:
+  check-alerts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger alert check
+        run: |
+          if [ -n "${{ secrets.FINTRACK_API_URL }}" ]; then
+            curl -X POST "${{ secrets.FINTRACK_API_URL }}/api/trading/check-alerts" \
+              -H "Authorization: Bearer ${{ secrets.FINTRACK_API_TOKEN }}" \
+              -H "Content-Type: application/json" || true
+          else
+            echo "FINTRACK_API_URL not configured, skipping"
+          fi
