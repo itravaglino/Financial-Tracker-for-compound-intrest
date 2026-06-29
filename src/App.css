@@ -1,0 +1,164 @@
+.app {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 3rem;
+}
+
+.app__header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.app__logo {
+  font-size: 2.25rem;
+  line-height: 1;
+}
+
+.app__header h1 {
+  margin: 0;
+  font-size: 1.6rem;
+  letter-spacing: -0.02em;
+}
+
+.app__header p {
+  margin: 0.25rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.25rem;
+}
+
+.form h2,
+.chart h2 {
+  margin: 0 0 1rem;
+  font-size: 1.05rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1.1rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.field input[type='number'],
+.field select,
+.input-prefix {
+  background: #0b1120;
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 9px;
+  padding: 0.6rem 0.7rem;
+  font-size: 0.95rem;
+  width: 100%;
+}
+
+.input-prefix {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0;
+}
+
+.input-prefix span {
+  padding-left: 0.7rem;
+  color: var(--text-muted);
+}
+
+.input-prefix input {
+  background: transparent;
+  border: none;
+  color: var(--text);
+  padding: 0.6rem 0.7rem 0.6rem 0;
+  width: 100%;
+  font-size: 0.95rem;
+}
+
+.field input:focus,
+.field select:focus,
+.input-prefix:focus-within {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+}
+
+input[type='range'] {
+  accent-color: var(--accent);
+}
+
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 560px) {
+  .stat-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.stat__label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.stat__value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.stat__hint {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.stat--primary {
+  background: linear-gradient(160deg, rgba(96, 165, 250, 0.18), var(--bg-card));
+  border-color: rgba(96, 165, 250, 0.4);
+}
+
+.stat--accent .stat__value {
+  color: var(--accent);
+}
+
+.app__footer {
+  margin-top: 2rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
