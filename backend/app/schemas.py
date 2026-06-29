@@ -110,6 +110,7 @@ class PatternDetectionResponse(BaseModel):
     patterns: list[dict]
     fibonacci_retracements: dict
     neural_confidence: float
+    neural_accuracy: Optional[float] = None
     prediction_direction: str
     prediction_confidence: float
 

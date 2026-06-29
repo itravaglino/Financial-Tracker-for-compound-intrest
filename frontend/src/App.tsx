@@ -8,6 +8,7 @@ import Portfolio from './pages/Portfolio';
 import Analysis from './pages/Analysis';
 import Trading from './pages/Trading';
 import Alerts from './pages/Alerts';
+import CompoundInterest from './pages/CompoundInterest';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -30,6 +31,7 @@ export default function App() {
         <Route path="analysis" element={<Analysis />} />
         <Route path="trading" element={<Trading />} />
         <Route path="alerts" element={<Alerts />} />
+        <Route path="compound" element={<CompoundInterest />} />
       </Route>
     </Routes>
   );

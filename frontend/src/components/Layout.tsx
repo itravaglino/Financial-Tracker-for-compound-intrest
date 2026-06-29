@@ -2,7 +2,7 @@ import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
   LayoutDashboard, Briefcase, LineChart, ArrowLeftRight,
-  Bell, LogOut, TrendingUp,
+  Bell, LogOut, TrendingUp, Calculator,
 } from 'lucide-react';
 
 const navItems = [
@@ -11,6 +11,7 @@ const navItems = [
   { to: '/analysis', icon: LineChart, label: 'Análisis' },
   { to: '/trading', icon: ArrowLeftRight, label: 'Trading' },
   { to: '/alerts', icon: Bell, label: 'Alertas' },
+  { to: '/compound', icon: Calculator, label: 'Interés Compuesto' },
 ];
 
 export default function Layout() {

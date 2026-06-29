@@ -4,6 +4,7 @@ Aplicación web avanzada para gestionar finanzas personales con datos en tiempo 
 
 ## Características
 
+- **Interés compuesto** — Calculadora de proyección de ahorros con aportes recurrentes
 - **Multi-usuario** — Registro e inicio de sesión con JWT y contraseñas encriptadas (bcrypt)
 - **Portfolio** — Gestión de posiciones e importación desde Yahoo Finance por símbolos
 - **Datos en tiempo real** — Cotizaciones, históricos y fundamentales vía Yahoo Finance
@@ -29,7 +30,15 @@ cp .env.example .env
 docker compose up --build
 ```
 
-Abre **http://localhost:8000** en tu navegador.
+Abre **http://localhost:8000** en tu navegador (frontend + API integrados).
+
+Para desarrollo con hot-reload del frontend:
+
+```bash
+docker compose --profile dev up --build
+```
+
+Abre **http://localhost:5173** (proxy `/api` → backend).
 
 ## Desarrollo local
 

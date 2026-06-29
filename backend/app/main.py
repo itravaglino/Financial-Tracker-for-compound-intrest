@@ -11,6 +11,7 @@ from app.database import engine, Base, SessionLocal
 from app.routes import auth, portfolio, analysis, trading
 from app.services.trading import AlertService
 from app.models import User
+from app.services.yahoo_finance import YahooFinanceService
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -64,7 +65,21 @@ app.include_router(trading.router)
 
 @app.get("/api/health")
 def health():
-    return {"status": "ok", "app": settings.app_name}
+    return {
+        "status": "ok",
+        "app": settings.app_name,
+        "demo_mode": YahooFinanceService.is_demo_mode(),
+    }
+
+
+@app.get("/")
+def root():
+    return {
+        "app": settings.app_name,
+        "docs": "/docs",
+        "health": "/api/health",
+        "demo_mode": YahooFinanceService.is_demo_mode(),
+    }
 
 
 # Serve frontend static files in production
