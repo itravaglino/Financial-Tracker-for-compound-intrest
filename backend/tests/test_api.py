@@ -1,14 +1,7 @@
-import pytest
-from fastapi.testclient import TestClient
-
-from app.main import app
 from app.services.demo_data import demo_fundamentals, demo_quote
 
 
-client = TestClient(app)
-
-
-def test_health():
+def test_health(client):
     response = client.get("/api/health")
     assert response.status_code == 200
     data = response.json()
@@ -16,7 +9,7 @@ def test_health():
     assert "demo_mode" in data
 
 
-def test_register_and_login():
+def test_register_and_login(client):
     response = client.post(
         "/api/auth/register",
         json={"username": "pytest_user", "email": "pytest@example.com", "password": "secret123"},
@@ -44,7 +37,7 @@ def test_demo_fundamentals():
     assert fund["pe_ratio"] is not None
 
 
-def test_quote_endpoint_authenticated():
+def test_quote_endpoint_authenticated(client):
     client.post(
         "/api/auth/register",
         json={"username": "quote_user", "email": "quote@example.com", "password": "secret123"},
@@ -65,7 +58,7 @@ def test_quote_endpoint_authenticated():
     assert data["price"] > 0
 
 
-def test_import_yahoo_portfolio():
+def test_import_yahoo_portfolio(client):
     client.post(
         "/api/auth/register",
         json={"username": "import_user", "email": "import@example.com", "password": "secret123"},
