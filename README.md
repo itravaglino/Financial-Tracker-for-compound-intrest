@@ -92,6 +92,33 @@ El valor isotérico normaliza el precio de una acción a una unidad de poder adq
 
 Permite comparar acciones de distintos mercados (US, Europa, LATAM) sin sesgo cambiario.
 
+## Hosting gratuito (Render)
+
+La forma más simple de hostear **frontend + API** gratis:
+
+1. Entrá a [Render](https://render.com) y conectá este repositorio
+2. Usá el Blueprint `render.yaml` (plan free)
+3. Render va a buildear el Dockerfile y publicar la app en una URL `*.onrender.com`
+
+Botón de deploy:
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
+
+> El plan free de Render apaga el servicio tras ~15 min de inactividad; el primer request puede tardar ~30–60s en despertarlo.
+
+### Demo rápida local + túnel
+
+```bash
+# Backend + frontend build
+cd frontend && npm install && npm run build && cd ..
+cd backend && python -m venv venv && source venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --host 0.0.0.0 --port 8000
+
+# En otra terminal (URL HTTPS pública gratis)
+cloudflared tunnel --url http://127.0.0.1:8000
+```
+
 ## Despliegue en GitHub
 
 - **GitHub Actions** — CI/CD automático en cada push (tests, build, Docker)
@@ -103,7 +130,7 @@ Permite comparar acciones de distintos mercados (US, Europa, LATAM) sin sesgo ca
 El frontend en GitHub Pages necesita un backend desplegado. Configura `VITE_API_URL` apuntando a tu backend:
 
 ```bash
-VITE_API_URL=https://tu-backend.railway.app/api npm run build
+VITE_API_URL=https://tu-backend.onrender.com/api npm run build
 ```
 
 ## Estructura del proyecto

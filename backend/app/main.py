@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from apscheduler.schedulers.background import BackgroundScheduler
 import os
@@ -31,6 +32,24 @@ def check_all_alerts():
         db.close()
 
 
+def resolve_frontend_dist() -> str | None:
+    """Resolve frontend build dir for repo layout and Docker layout."""
+    here = os.path.dirname(__file__)
+    candidates = [
+        os.path.join(here, "..", "..", "frontend", "dist"),  # Repo: <root>/frontend/dist
+        os.path.join(here, "..", "frontend", "dist"),  # Docker: /app/frontend/dist
+    ]
+    found: list[str] = []
+    for candidate in candidates:
+        path = os.path.abspath(candidate)
+        if os.path.isdir(path) and os.path.isfile(os.path.join(path, "index.html")):
+            found.append(path)
+    if not found:
+        return None
+    # Prefer the newest build if multiple layouts exist
+    return max(found, key=lambda p: os.path.getmtime(os.path.join(p, "index.html")))
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     Base.metadata.create_all(bind=engine)
@@ -48,10 +67,10 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-origins = [o.strip() for o in settings.cors_origins.split(",")]
+origins = [o.strip() for o in settings.cors_origins.split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins + ["*"],
+    allow_origins=origins if origins != ["*"] else ["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -72,8 +91,8 @@ def health():
     }
 
 
-@app.get("/")
-def root():
+@app.get("/api")
+def api_root():
     return {
         "app": settings.app_name,
         "docs": "/docs",
@@ -82,7 +101,36 @@ def root():
     }
 
 
-# Serve frontend static files in production
-frontend_dist = os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "dist")
-if os.path.exists(frontend_dist):
-    app.mount("/", StaticFiles(directory=frontend_dist, html=True), name="frontend")
+frontend_dist = resolve_frontend_dist()
+
+if frontend_dist:
+    assets_dir = os.path.join(frontend_dist, "assets")
+    if os.path.isdir(assets_dir):
+        app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
+
+    @app.get("/")
+    def serve_index():
+        return FileResponse(os.path.join(frontend_dist, "index.html"))
+
+    @app.get("/{full_path:path}")
+    def serve_spa(full_path: str):
+        reserved = ("api", "docs", "redoc", "openapi.json")
+        first = full_path.split("/", 1)[0]
+        if first in reserved or full_path.startswith("api/"):
+            raise HTTPException(status_code=404, detail="Not Found")
+
+        candidate = os.path.join(frontend_dist, full_path)
+        if full_path and os.path.isfile(candidate):
+            return FileResponse(candidate)
+        return FileResponse(os.path.join(frontend_dist, "index.html"))
+else:
+
+    @app.get("/")
+    def root():
+        return {
+            "app": settings.app_name,
+            "docs": "/docs",
+            "health": "/api/health",
+            "demo_mode": YahooFinanceService.is_demo_mode(),
+            "frontend": "not built — run `npm run build` in frontend/",
+        }

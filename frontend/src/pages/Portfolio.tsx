@@ -39,12 +39,26 @@ export default function PortfolioPage() {
   };
 
   const handleAddHolding = async () => {
-    if (!selectedPortfolio) return;
+    const symbol = newHolding.symbol.trim().toUpperCase();
+    const quantity = parseFloat(newHolding.quantity);
+    const avgCost = parseFloat(newHolding.avg_cost);
+
+    if (!symbol) return setError('Ingresa un símbolo');
+    if (!Number.isFinite(quantity) || quantity <= 0) return setError('Cantidad inválida');
+    if (!Number.isFinite(avgCost) || avgCost < 0) return setError('Costo promedio inválido');
+
     try {
-      await api.addHolding(selectedPortfolio, {
-        symbol: newHolding.symbol.toUpperCase(),
-        quantity: parseFloat(newHolding.quantity),
-        avg_cost: parseFloat(newHolding.avg_cost),
+      setError('');
+      let portfolioId = selectedPortfolio;
+      if (!portfolioId) {
+        const created = await api.createPortfolio('Mi Portfolio');
+        portfolioId = created.id;
+        setSelectedPortfolio(created.id);
+      }
+      await api.addHolding(portfolioId, {
+        symbol,
+        quantity,
+        avg_cost: avgCost,
       });
       setShowAdd(false);
       setNewHolding({ symbol: '', quantity: '', avg_cost: '' });
@@ -192,8 +206,14 @@ export default function PortfolioPage() {
       )}
 
       {showAdd && (
-        <Modal title="Agregar posición" onClose={() => setShowAdd(false)}>
+        <Modal title="Agregar posición" onClose={() => { setShowAdd(false); setError(''); }}>
           <div className="space-y-3">
+            {!selectedPortfolio && (
+              <p className="text-xs text-slate-400">Se creará automáticamente el portfolio &quot;Mi Portfolio&quot;.</p>
+            )}
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-3 py-2 rounded-lg">{error}</div>
+            )}
             <div>
               <label className="label">Símbolo</label>
               <input className="input" value={newHolding.symbol} onChange={e => setNewHolding({ ...newHolding, symbol: e.target.value })} placeholder="AAPL" />
